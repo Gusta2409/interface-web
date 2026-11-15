@@ -1,0 +1,20 @@
+<main>
+  <p class="etiqueta">PROTÓTIPO EXPERIMENTAL · TCC</p><h1>Comparador de preços</h1>
+  <p>Compare buscas síncronas e assíncronas usando três lojas simuladas.</p>
+  <form (ngSubmit)="buscar('sincrona')"><label for="termo">Nome do produto</label>
+  <input id="termo" name="termo" [(ngModel)]="termo" required maxlength="255" placeholder="Ex.: controle xbox">
+  <div class="acoes"><button type="submit" [disabled]="carregando() || !termo.trim()">Buscar síncrono</button>
+  <button type="button" (click)="buscar('assincrona')" [disabled]="carregando() || !termo.trim()">Buscar assíncrono</button></div></form>
+  @if(carregando()){<p role="status">Aguardando resposta inicial da API…</p>}
+  @if(erro()){<p role="alert">{{erro()}}</p>}
+  @if(resultado(); as busca){<section aria-live="polite"><h2>{{busca.termo}}</h2><p>{{busca.modo}} · {{busca.status}}</p>
+  @if(busca.modo==='ASSINCRONO_SIMULADO'){<p>Modo de demonstração: processamento em segundo plano, sem Kafka.</p>}
+  <p>Resposta inicial: {{busca.tempoRespostaInicialMs ?? '—'}} ms · Tempo total: {{busca.tempoTotalMs ?? '—'}} ms</p>
+  @if(busca.status==='FALHOU'){<p>A busca falhou. Consulte os serviços e a configuração das fontes.</p>}
+  @if(busca.resultados.length){<div class="tabela"><table><thead><tr><th>Fonte</th><th>Produto</th><th>Preço</th><th>Tempo da fonte</th></tr></thead><tbody>
+  @for(item of busca.resultados; track item.fonte){<tr><td>{{item.fonte}}</td><td>{{item.nomeProduto}}</td><td>{{item.preco | currency:'BRL':'symbol':'1.2-2'}}</td><td>{{item.tempoFonteMs}} ms</td></tr>}
+  </tbody>
+  </table>
+  </div>}
+  </section>}
+</main>
